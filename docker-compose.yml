@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   db:
@@ -30,6 +29,7 @@ services:
         condition: service_healthy
     volumes:
       - ./app:/code/app
+      - ./tests:/code/tests
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
