@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from app.models.models import Tenant, Plan, Subscription, UsageEvent
+from app.models.models import Tenant, Plan, Subscription, UsageEvent, ProcessedWebhookEvent
 from app.routes.usage import router as usage_router
+from app.routes.billing import router as billing_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,3 +19,4 @@ def health_check():
 
 
 app.include_router(usage_router)
+app.include_router(billing_router)

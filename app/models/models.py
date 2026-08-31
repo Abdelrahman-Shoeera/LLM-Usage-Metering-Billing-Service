@@ -66,3 +66,12 @@ class UsageEvent(Base):
     metadata_ = Column("metadata", JSON, nullable=True)
 
     tenant = relationship("Tenant", back_populates="usage_events")
+
+
+class ProcessedWebhookEvent(Base):
+    __tablename__ = "processed_webhook_events"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    stripe_event_id = Column(String, nullable=False, unique=True)
+    event_type = Column(String, nullable=False)
+    processed_at = Column(DateTime, default=utc_now)
