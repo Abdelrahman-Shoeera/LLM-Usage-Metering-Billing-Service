@@ -10,6 +10,8 @@ class Settings(BaseSettings):
 
     APP_ENV: str = "development"
 
+    GEMINI_API_KEY: str = ""
+
     class Config:
         env_file = ".env"
 
