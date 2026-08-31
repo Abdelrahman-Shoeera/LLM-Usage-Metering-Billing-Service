@@ -1,0 +1,64 @@
+name: llm-billing-engine
+description: Usage metering and billing engine with real LLM integration, idempotent metering, quota enforcement, per-category token pricing, and Stripe test-mode integration.
+
+language: python
+framework: fastapi
+database: postgresql
+
+run: docker compose up --build
+
+seed: docker compose exec app python -m app.seed
+
+test: docker compose exec app pytest -v
+
+base_url: http://localhost:8000
+
+endpoints:
+  - method: GET
+    path: /health
+    purpose: Health check
+
+  - method: POST
+    path: /usage
+    purpose: Record a billable event (idempotent, quota-checked)
+    headers:
+      - Idempotency-Key
+    body:
+      - tenant_id
+      - event_type
+      - quantity
+      - metadata (optional)
+
+  - method: GET
+    path: /usage
+    purpose: Read current usage, limits, and cost
+    query:
+      - tenant_id
+
+  - method: POST
+    path: /generate
+    purpose: Call Gemini and record real token usage
+    headers:
+      - Idempotency-Key
+    body:
+      - tenant_id
+      - prompt
+
+  - method: POST
+    path: /billing/checkout
+    purpose: Create a Stripe Checkout session
+    body:
+      - tenant_id
+      - plan (default "pro")
+
+  - method: POST
+    path: /webhooks/stripe
+    purpose: Receive signature-verified Stripe webhooks
+    headers:
+      - Stripe-Signature
+
+env_vars_required:
+  - DATABASE_URL
+  - STRIPE_SECRET_KEY
+  - STRIPE_WEBHOOK_SECRET
+  - GEMINI_API_KEY
