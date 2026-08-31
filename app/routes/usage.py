@@ -14,6 +14,7 @@ from app.services.usage_service import (
     record_usage,
     get_current_usage,
     get_tenant_subscription,
+    get_usage_costs,
 )
 
 router = APIRouter()
@@ -96,7 +97,5 @@ def get_usage(
             limit=plan.token_limit,
             remaining=plan.token_limit - token_usage,
         ),
-        cost={
-            "total_cents": 0,
-        },
+        cost=get_usage_costs(db, tenant_id),  
     )
